@@ -15,17 +15,13 @@ client = commands.Bot(command_prefix ='$')
 sad_words = ["sad", "depressed", "unhappy", "angry", "miserable"]
 bad_words = ["shut up", "stupid", "dumb", "idiot", "loser"] 
 
-starter_encouragements = [
-  "Cheer up!",
-  "Hang in there.",
-  "You are a great person"
-]
+starter_encouragements = ["Cheer up!","Hang in there.", "You are a great person"]
+insult_warning = 'Please dont send bad words in the channel!'
 
 mentalhealthcheck = ["https://imgur.com/yZhyHnt"]
 memes = ["https://imgur.com/a/G4u1wYx", "https://imgur.com/a/TbCHP8x", "https://imgur.com/a/gRi7g8l"]
-
-insult_warning = 'Please dont send bad words in the channel!'
-
+starter_birthday = ['https://gph.is/g/ZyDkN2W','https://gph.is/g/4DBzNNB','https://gph.is/g/Zn6Gqv1']  
+birthday_words = ["happy birthday"]  
 
 # teacher = '837914922872602664'
 student = '837915203680600065'
@@ -40,9 +36,6 @@ student = '837915203680600065'
     #   await message.channel.send(insult_warning)
 def is_it_me(ctx):
     return ctx.author.id == 400822001930993674
-
-    
-  
 
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
@@ -141,12 +134,18 @@ async def on_message(message):
         await message.channel.send("What’s your favorite tradition or holiday?")
       elif randomNumber == 7:
         await message.channel.send("If you could live in one fictional universe, which one would you choose?")
-
+    
+    #memes and mental health check
     if message.content.startswith('$memes'):
       await message.channel.send(random.choice(memes))
     elif message.content.startswith('$mentalhealthcheck'):
       await message.channel.send(random.choice(mentalhealthcheck))
+   
+    #birthday
+    msg = message.content
 
+    if any(word in msg for word in birthday_words):
+      await message.channel.send(random.choice(starter_birthday))  
 
 
 # @client.command()
