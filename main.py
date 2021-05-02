@@ -5,6 +5,9 @@ import os
 import requests
 import json
 import random
+import asyncio
+import time
+import datetime
 
 # client = discord.Client()
 client = commands.Bot(command_prefix ='$')
@@ -18,6 +21,8 @@ starter_encouragements = [
   "You are a great person"
 ]
 
+mentalhealthcheck = ["https://imgur.com/yZhyHnt"]
+memes = ["https://imgur.com/a/G4u1wYx", "https://imgur.com/a/TbCHP8x", "https://imgur.com/a/gRi7g8l"]
 
 insult_warning = 'Please dont send bad words in the channel!'
 
@@ -36,11 +41,28 @@ student = '837915203680600065'
 def is_it_me(ctx):
     return ctx.author.id == 400822001930993674
 
+    
+  
+
 def get_quote():
   response = requests.get("https://zenquotes.io/api/random")
   json_data = json.loads(response.text)
   quote = json_data[0]['q'] + " -" + json_data[0]['a']
   return(quote)
+
+# def update_encouragements(encouraging_message):
+#   if "encouragements" in db.keys():
+#     encouragements = db["encouragements"]
+#     encouragements.append(encouraging_message)
+#     db["encouragements"] = encouragements
+#   else:
+#     db["encouragements"] = [encouraging_message]
+
+# def delete_encouragment(index):
+#   encouragements = db["encouragements"]
+#   if len(encouragements) > index:
+#     del encouragements[index]
+#   db["encouragements"] = encouragements
 
 #inspirational quote
 @client.command(name = "inspire")
@@ -70,6 +92,13 @@ async def on_message(message):
     #     encouraging_message = msg.split("$new ",1)[1]
     #     update_encouragements(encouraging_message)
     #     await message.channel.send("New encouraging message added.")
+    #   if msg.startswith("$del"):
+    #     encouragements = []
+    #     if "encouragements" in db.keys():
+    #       index = int(msg.split("$del",1)[1])
+    #       delete_encouragment(index)
+    #       encouragements = db["encouragements"]
+    #     await message.channel.send(encouragements)
     
     if message.content.startswith('$resources'):
       await message.channel.send('**Please use the following commands to find your specified resource.**\n◦📈 `mathhelp` : Mathematics help.\n◦🧪 `chemhelp` : Chemistry help\n◦🧬 `biohelp` : Biology help.\n◦🧲 `physicshelp` : Physics help.\n◦ 📍`geohelp`: Geography help.\n◦ 📜 `historyhelp` : History help.\n')
@@ -96,23 +125,27 @@ async def on_message(message):
 
     #icebreakers
     if message.content.startswith('$icebreaker'):
-
       randomNumber = random.randint(1,7)
 
-    if randomNumber == 1:
-      await message.channel.send("If you were a vegetable, what vegetable would you be?")
-    elif randomNumber == 2:
-      await message.channel.send("Have you ever completed anything on your “bucket list”?")
-    elif randomNumber == 3:
-      await message.channel.send("If you were stranded on a desert island, what three items would you want to have with you?")
-    elif randomNumber == 4:
-      await message.channel.send("If you could hang out with any cartoon character, who would you choose and why?")
-    elif randomNumber == 5:
-      await message.channel.send("What book or movie have you read/seen recently that you would recommend and why?")
-    elif randomNumber == 6:
-      await message.channel.send("What’s your favorite tradition or holiday?")
-    elif randomNumber == 7:
-      await message.channel.send("If you could live in one fictional universe, which one would you choose?")
+      if randomNumber == 1:
+        await message.channel.send("If you were a vegetable, what vegetable would you be?")
+      elif randomNumber == 2:
+        await message.channel.send("Have you ever completed anything on your “bucket list”?")
+      elif randomNumber == 3:
+        await message.channel.send("If you were stranded on a desert island, what three items would you want to have with you?")
+      elif randomNumber == 4:
+        await message.channel.send("If you could hang out with any cartoon character, who would you choose and why?")
+      elif randomNumber == 5:
+        await message.channel.send("What book or movie have you read/seen recently that you would recommend and why?")
+      elif randomNumber == 6:
+        await message.channel.send("What’s your favorite tradition or holiday?")
+      elif randomNumber == 7:
+        await message.channel.send("If you could live in one fictional universe, which one would you choose?")
+
+    if message.content.startswith('$memes'):
+      await message.channel.send(random.choice(memes))
+    elif message.content.startswith('$mentalhealthcheck'):
+      await message.channel.send(random.choice(mentalhealthcheck))
 
 
 
@@ -129,6 +162,10 @@ async def on_message(message):
 async def test(ctx):
     await ctx.send(f'hi im {ctx.author}')
 
+@test.error
+async def test(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('You dont need have permission to access this command. Sorry bud!')
 #mute
 @client.command()
 @commands.check(is_it_me)
@@ -139,6 +176,11 @@ async def mute(ctx):
                 continue
             await x.edit(mute=True)
 
+@mute.error
+async def test(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('You dont need have permission to access this command. Sorry bud!')
+
 #unmute
 @client.command()
 @commands.check(is_it_me)
@@ -146,5 +188,10 @@ async def unmute(ctx):
     for x in ctx.message.guild.members:
         if x in ctx.message.author.voice.channel.members:
             await x.edit(mute=False)
+@unmute.error
+async def test(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('You dont need have permission to access this command. Sorry bud!')
+
 
 client.run(os.getenv('TOKEN'))
